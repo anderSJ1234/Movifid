@@ -30,6 +30,8 @@ function Main() {
     }`
   ); */
   const [input, setInput] = useState("");
+
+
   useEffect(() => {
     setLoading(true)
     console.log(url);
@@ -41,22 +43,6 @@ function Main() {
         console.log(res.results);
       });
   }, [url]);
-
-  function infoPeli(id) {
-    console.log("llamando algo");
-    console.log(
-      `https://api.themoviedb.org/3/movie/${id}?api_key=16c0c7c2001417163ffa6562e476124e`
-    );
-    fetch(
-      `https://api.themoviedb.org/3/movie/${id}?api_key=16c0c7c2001417163ffa6562e476124e`
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        setMostrarPeli(res);
-        console.log(res);
-        setBoton(true);
-      });
-  }
 
   function PeliculaTarjeta() {
     let title = "";
@@ -95,6 +81,73 @@ function Main() {
         </Alert>
       </div>
     );
+  }
+
+  
+  let todasLasPelis = data2.map((pelicula, index) => {
+    let title = "";
+    if (pelicula.title !== undefined) {
+      title = pelicula.title;
+    } else if (pelicula.name !== undefined) {
+      title = pelicula.name;
+    } else if (pelicula.original_title !== undefined) {
+      title = pelicula.original_title;
+    } else if (pelicula.original_name !== undefined) {
+      title = pelicula.original_name;
+    }
+
+    let title2 = "";
+    if (pelicula.release_date !== undefined) {
+      if(pelicula.release_date ===""){
+        title2 = "xxxx-xx-xx"
+      }else{
+        title2 = pelicula.release_date;
+      }
+    } else if (pelicula.first_air_date !== undefined) {
+      if(pelicula.first_air_date ===""){
+        title2 = "xxxx-xx-xx"
+      }else{
+        title2 = pelicula.first_air_date;
+      } 
+    }
+    return (
+      <Row className="row">
+        <Card style={{ width: "15rem" }} key={index} className="cards">
+          <Card.Img
+            variant="top"
+            src={
+              pelicula.poster_path === null
+                ? patata
+                : `https://www.themoviedb.org/t/p/w300_and_h450_bestv2/${pelicula.poster_path}`
+            }
+            className="alargar-img"
+          />
+          <Card.Body className="centrar-todo">
+            <Card.Title className="centrar-todo">{title}</Card.Title>
+            <Navbar.Text>Fecha de estreno: {title2}</Navbar.Text>
+            <Button variant="primary" onClick={() => infoPeli(pelicula.id)}>
+              información completa
+            </Button>
+          </Card.Body>
+        </Card>
+      </Row>
+    );
+  });
+
+  function infoPeli(id) {
+    console.log("llamando algo");
+    console.log(
+      `https://api.themoviedb.org/3/movie/${id}?api_key=16c0c7c2001417163ffa6562e476124e`
+    );
+    fetch(
+      `https://api.themoviedb.org/3/movie/${id}?api_key=16c0c7c2001417163ffa6562e476124e`
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        setMostrarPeli(res);
+        console.log(res);
+        setBoton(true);
+      });
   }
 
   function noPasarPagina() {
@@ -164,61 +217,12 @@ function Main() {
     }
     return(newUrl)
   }
-  let todasLasPelis = data2.map((pelicula, index) => {
-    let title = "";
-    if (pelicula.title !== undefined) {
-      title = pelicula.title;
-    } else if (pelicula.name !== undefined) {
-      title = pelicula.name;
-    } else if (pelicula.original_title !== undefined) {
-      title = pelicula.original_title;
-    } else if (pelicula.original_name !== undefined) {
-      title = pelicula.original_name;
-    }
 
-    let title2 = "";
-    if (pelicula.release_date !== undefined) {
-      if(pelicula.release_date ===""){
-        title2 = "xxxx-xx-xx"
-      }else{
-        title2 = pelicula.release_date;
-      }
-    } else if (pelicula.first_air_date !== undefined) {
-      if(pelicula.first_air_date ===""){
-        title2 = "xxxx-xx-xx"
-      }else{
-        title2 = pelicula.first_air_date;
-      } 
-    }
-    return (
-      <Row className="row">
-        <Card style={{ width: "15rem" }} key={index} className="cards">
-          <Card.Img
-            variant="top"
-            src={
-              pelicula.poster_path === null
-                ? patata
-                : `https://www.themoviedb.org/t/p/w300_and_h450_bestv2/${pelicula.poster_path}`
-            }
-            className="alargar-img"
-          />
-          <Card.Body className="centrar-todo">
-            <Card.Title className="centrar-todo">{title}</Card.Title>
-            <Navbar.Text>Fecha de estreno: {title2}</Navbar.Text>
-            <Button variant="primary" onClick={() => infoPeli(pelicula.id)}>
-              información completa
-            </Button>
-          </Card.Body>
-        </Card>
-      </Row>
-      /* {pelicula.title === null ? pelicula.name : pelicula.title} */
-    );
-  });
 
   if (loading) {
     return(
     <div className="spinnner">
-      <div>Cargando</div>
+      <div>Cargando...</div>
       <Spinner animation="border" variant="success" />
     </div>
     )
@@ -230,7 +234,7 @@ function Main() {
             <PeliculaTarjeta />
           </div>
   
-          {/*  <Pagination className="pagination">
+           <Pagination className="pagination">
             <Pagination.First onClick={noPasarPagina10} />
             <Pagination.Prev onClick={noPasarPagina} />
   
@@ -240,7 +244,7 @@ function Main() {
   
             <Pagination.Next onClick={PasarPagina} />
             <Pagination.Last onClick={PasarPagina10} />
-          </Pagination> */}
+          </Pagination>
         </div>
       );
     } else {
