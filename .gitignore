@@ -1,3 +1,8 @@
 /server/node_modules
 /front/node_modules
 /server/.env
+/front/package-lock.json
+/front/package.json
+/server/package.json
+/server/package-lock.json
+.gitignore
